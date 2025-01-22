@@ -1,3 +1,1 @@
-# practica_final_4
-
-A new Flutter project.
+Nomes funciona per a android
