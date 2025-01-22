@@ -27,18 +27,19 @@ class DbProvider {
 
     //Crear DB
     return await openDatabase(
-      path,
-      version: 1,
-      onOpen: (db) {},
-      onCreate: (Database db, int version) async {
-        await db.execute('''
+        path,
+        version: 1,
+        onOpen: (db) {},
+        onCreate: (Database db, int version) async {
+          await db.execute('''
           CREATE TABLE Scans(
             id INTEGER PRIMARY KEY,
             tipus TEXT,
-            valor TEXT
+            valor TEXT,
+            title TEXT
           )
         ''');
-      }
+        }
     );
   }
 
@@ -59,6 +60,53 @@ class DbProvider {
     final db = await database;
     final res = await db.insert('Scans', nouScan.toMap());
     print(res);
+    return res;
+  }
+
+  Future<List<ScanModel>> getAllScans() async {
+    final db = await database;
+    final res = await db.query('Scans');
+    List<ScanModel> list = res.isNotEmpty ? res.map((c) => ScanModel.fromMap(c)).toList() : [];
+    return list;
+  }
+
+  Future<ScanModel?> getScanById(int id) async {
+    final db = await database;
+    final res = await db.query('Scans', where: 'id = ?', whereArgs: [id]);
+    if(res.isNotEmpty) {
+      return ScanModel.fromMap(res.first);
+    }
+    return null;
+  }
+
+  Future<List<ScanModel>> getTipusScan(String tipus) async {
+    final db = await database;
+    final res = await db.query('Scans', where: 'tipus = ?', whereArgs: [tipus]);
+    List<ScanModel> list = res.isNotEmpty ? res.map((c) => ScanModel.fromMap(c)).toList() : [];
+    return list;
+  }
+
+  Future<int> updateScan(ScanModel nouScan) async {
+    final db = await database;
+    final res = await db.update('Scans', nouScan.toMap(), where: 'id = ?', whereArgs: [nouScan.id]);
+    return res;
+  }
+
+  Future<int> deleteScan(int id) async {
+    final db = await database;
+    final res = await db.delete('Scans', where: 'id = ?', whereArgs: [id]);
+    return res;
+  }
+
+  Future<int> deleteAllScans() async {
+    final db = await database;
+    final res = await db.delete('Scans');
+    return res;
+  }
+
+  Future<int> addTitle(ScanModel scan) async {
+    final db = await database;
+    final res = await db.update('Scans', scan.toMap(), where: 'id = ?', whereArgs: [scan.id]);
     return res;
   }
 }
