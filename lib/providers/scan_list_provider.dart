@@ -39,12 +39,12 @@ class ScanListProvider extends ChangeNotifier {
 
   esborrarScanPerId(int id) async {
     await DbProvider.dbProvider.deleteScan(id);
-    carrregarScans();
+    carrregarScansPerTipus(tipus);
   }
 
   addTitle(ScanModel scan) async {
     await DbProvider.dbProvider.addTitle(scan);
     print(scan.title);
-    carrregarScansPerTipus(scan.tipus!);
+    carrregarScansPerTipus(tipus);
   }
 }
